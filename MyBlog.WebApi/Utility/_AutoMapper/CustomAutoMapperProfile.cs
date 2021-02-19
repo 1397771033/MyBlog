@@ -14,6 +14,9 @@ namespace MyBlog.WebApi.Utility._AutoMapper
     public CustomAutoMapperProfile()
     {
       base.CreateMap<WriterInfo, WriterDTO>();
+      base.CreateMap<BlogNews, BlogNewsDTO>()
+        .ForMember(dest => dest.TypeName, sourse => sourse.MapFrom(src => src.TypeInfo.Name))
+        .ForMember(dest => dest.WriterName, sourse => sourse.MapFrom(src => src.WriterInfo.Name));
     }
   }
 }

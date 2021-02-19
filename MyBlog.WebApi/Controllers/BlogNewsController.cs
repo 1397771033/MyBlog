@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MyBlog.IService;
 using MyBlog.Model;
+using MyBlog.Model.DTO;
 using MyBlog.WebApi.Utility.ApiResult;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -71,6 +74,21 @@ namespace MyBlog.WebApi.Controllers
       bool b = await _iBlogNewsService.EditAsync(blogNews);
       if (!b) return ApiResultHelper.Error("修改失败");
       return ApiResultHelper.Success(blogNews);
+    }
+    [HttpGet("BlogNewsPage")]
+    public async Task<ApiResult> GetBlogNewsPage([FromServices] IMapper iMapper,int page,int size)
+    {
+      RefAsync<int> total = 0;
+      var blognews =await _iBlogNewsService.QueryAsync(page, size, total);
+      try
+      {
+        var blognewsDTO = iMapper.Map<List<BlogNewsDTO>>(blognews);
+        return ApiResultHelper.Success(blognewsDTO, total);
+      }
+      catch (Exception)
+      {
+        return ApiResultHelper.Error("AutoMapper映射错误");
+      }
     }
   }
 }
